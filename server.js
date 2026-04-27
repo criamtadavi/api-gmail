@@ -6,14 +6,14 @@ const app = express();
 app.use(bodyParser.json());
 
 // 🔐 chave de proteção (MTA -> API)
-const API_KEY = "123456";
+const API_KEY = process.env.API_KEY || "123456";
 
 // 🔑 SendGrid
-sgMail.setApiKey("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");
+sgMail.setApiKey(process.env.SENDGRID_KEY);
 
 // 📦 rota envio
 app.post("/send", async (req, res) => {
-    const { key, to, subject, message } = req.body;
+    const { key, to, subject, message, html } = req.body;
 
     if (key !== API_KEY) {
         return res.status(403).json({ error: "Acesso negado" });
@@ -24,6 +24,7 @@ app.post("/send", async (req, res) => {
         from: "inovaroleplay@hotmail.com", // Coloque SEU email aqui!
         subject: subject,
         text: message,
+        html: html,
     };
 
     try {
